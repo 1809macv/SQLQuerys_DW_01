@@ -1,0 +1,7 @@
+
+Descuento2Producto
+= IF(CantidadVenta > 0, ((DescuentoVenta2/CantidadVenta) * CantDISP_UN), 0)
+
+TotalconDescuento
+= ROUND(TotalProducto-DescuentoProducto-Descuento2Producto, 2)
+
