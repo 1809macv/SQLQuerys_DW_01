@@ -18,6 +18,7 @@ CREATE EXTERNAL TABLE [PIVOT].[extVentasXFecha]
 	[TipoPago] [varchar](255) NOT NULL,
 	[IdDocumentoEstado] [bigint] NOT NULL,
 	[DocumentoEstado] [varchar](255) NOT NULL,
+	[VendedorId] [bigint] NOT NULL,
 	[Vendedor] [varchar](200) NOT NULL,
 	[AlmacenID] [bigint] NOT NULL,
 	[ProductoID] [bigint] NOT NULL, 
