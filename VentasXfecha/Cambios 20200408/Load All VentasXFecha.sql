@@ -16,14 +16,14 @@ WHILE (@DistribuidorId <= @MaxDistribuidorId)
 	BEGIN
 		INSERT INTO [PIVOT].[VentasXFecha]
 		  (IdDistribuidor ,FechaVenta, ClienteId ,RazonSocial ,NumeroNit ,NumeroFactura ,AutorizacionNumero ,CodigoControl ,TipoPago 
-		  ,IdDocumentoEstado ,DocumentoEstado ,Vendedor ,AlmacenId ,ProductoId ,Bonificacion ,NumeroLote ,UnidadMedidaVenta 
+		  ,IdDocumentoEstado ,DocumentoEstado ,VendedorId ,Vendedor ,AlmacenId ,ProductoId ,Bonificacion ,NumeroLote ,UnidadMedidaVenta 
 		  ,FactorConversion ,ListaPrecio ,CantDISP_UN ,CantBU ,PrecioProducto ,TotalProducto ,CantidadDevuelta ,DescuentoProducto 
 		  ,Descuento2Producto ,UsuarioTransaccion ,CostoPrecioPromedio     --,DescuentoDocumento 
 		  ,TotalCostoPromedio ,CMB_Monto ,CMB_Porcentaje ,NumeroGuia ,EstadoGuia ,RepartidorNombre ,FechaCreacionGuia ,FechaDespachoGuia 
 		  ,ObservacionFactura
 		  )
 		 SELECT DistribuidorId ,FechaVenta, ClienteID ,RazonSocial ,NumeroNit, NumeroFactura ,AutorizacionNumero ,CodigoControl ,TipoPago 
-			   ,IdDocumentoEstado ,DocumentoEstado ,Vendedor ,AlmacenID ,ProductoId ,Bonificacion ,NumeroLote ,UnidadMedidaVenta 
+			   ,IdDocumentoEstado ,DocumentoEstado ,VendedorId ,Vendedor ,AlmacenID ,ProductoId ,Bonificacion ,NumeroLote ,UnidadMedidaVenta 
 			   ,FactorConversion ,ListaPrecio ,CantDISP_UN ,CantBU ,PrecioProducto ,TotalProducto ,CantidadDevuelta ,DescuentoProducto 
 			   ,Descuento2Producto     --,DescuentoDocumento 
 			   ,UsuarioTransaccion ,CostoPrecioPromedio ,TotalCostoPromedio ,CMB_Monto ,CMB_Porcentaje ,NumeroGuia ,EstadoGuia 
@@ -36,8 +36,8 @@ WHILE (@DistribuidorId <= @MaxDistribuidorId)
 		SET @DistribuidorId = @DistribuidorId + 1
 	END
 
-	IF @@ERROR <> 0 
-		ROLLBACK;
-	ELSE
-		COMMIT;
+IF @@ERROR <> 0 
+	ROLLBACK;
+ELSE
+	COMMIT;
 

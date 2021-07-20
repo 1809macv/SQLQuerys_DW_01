@@ -5,7 +5,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE [PIVOT].[VentasXFecha_CargaVendedorId](
+CREATE TABLE [PIVOT].[VentasXFecha](
 	[IdDistribuidor] [bigint] NOT NULL,
 	[FechaVenta] [date] NULL,
 	[ClienteId] [bigint] NOT NULL,
