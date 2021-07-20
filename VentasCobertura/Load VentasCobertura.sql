@@ -1,10 +1,10 @@
 SET DATEFORMAT YMD
 
-DECLARE @FechaDesde DATE = DATEFROMPARTS(2021, 1, 1);
+DECLARE @FechaHoy DATE = CAST( GETDATE() as DATE) 
+DECLARE @FechaDesde DATE = EOMONTH(@FechaHoy, -2);
 
-BEGIN TRANSACTION
-
-TRUNCATE TABLE [PIVOT].VentasCobertura
+DELETE FROM [PIVOT].VentasCobertura
+WHERE DATEFROMPARTS(AnioVenta, MesNumero, 1) > @FechaDesde
 IF @@ERROR <> 0
 	ROLLBACK;
 ELSE
@@ -25,7 +25,7 @@ ELSE
 			  ,SUM(CantBU) AS CantidadBultos
 			  ,0
 		  FROM [PIVOT].VentasXFecha
-		 WHERE FechaVenta >= @FechaDesde
+		 WHERE FechaVenta >= @FechaDesde AND IdDocumentoEstado <> 104
 		GROUP BY IdDistribuidor ,YEAR(FechaVenta) ,MONTH(FechaVenta) ,VendedorId ,ProductoId;
 
 		--Se realiza la actualizacion del valor de las coberturas
@@ -52,17 +52,4 @@ IF @@ERROR <> 0
 	ROLLBACK;
 ELSE
 	COMMIT;
-
---UPDATE [PIVOT].VentasCobertura 
---   SET CantidadCobertura = (Select Cobertura.Cobertura From Cobertura AS Cobertura
---							 Where Cobertura.IdDistribuidor = [PIVOT].VentasCobertura.IdDistribuidor
---									AND Cobertura.AnioVenta = [PIVOT].VentasCobertura.AnioVenta
---									AND Cobertura.MesNumero = [PIVOT].VentasCobertura.MesNumero
---									AND Cobertura.SellerId = [PIVOT].VentasCobertura.VendedorId
---									AND Cobertura.ProductId = [PIVOT].VentasCobertura.ProductoId)
---WHERE [PIVOT].VentasCobertura.IdDistribuidor = 5 
---		AND [PIVOT].VentasCobertura.AnioVenta = 2021
---		AND [PIVOT].VentasCobertura.MesNumero = 1
---		AND [PIVOT].VentasCobertura.VendedorId = 90
---		AND [PIVOT].VentasCobertura.ProductoId in (1178, 1179, 1180)
 
