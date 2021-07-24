@@ -17,6 +17,7 @@ CREATE TABLE [PIVOT].[VentasXFecha](
 	[TipoPago] [varchar](255) NOT NULL,
 	[IdDocumentoEstado] [bigint] NOT NULL,
 	[DocumentoEstado] [varchar](255) NOT NULL,
+	[VendedorId] [bigint] NOT NULL,
 	[Vendedor] [varchar](255) NOT NULL,
 	[AlmacenID] [bigint] NOT NULL,
 	[ProductoID] [bigint] NOT NULL, 
