@@ -27,13 +27,13 @@ AS (
 					WHEN 0 THEN 'No'
 					WHEN 1 THEN 'Si'
 		   END AS Bonificacion
-		  ,Batch.BachNumber AS NumeroLote ,C3.Name AS UnidadMedidaVenta ,CUnit.Equivalence AS FactorConversion ,PLst.Name AS ListaPrecio
-		  ,SaleD.Quantity AS CantDISP_UN ,(SaleD.Quantity/CUnit.Equivalence) AS CantBU ,SaleD.Price AS PrecioProducto ,SaleD.Total AS TotalProducto
+		  ,Batch.BachNumber AS NumeroLote ,C3.Name AS UnidadMedidaVenta ,SaleD.Equivalence AS FactorConversion ,PLst.Name AS ListaPrecio
+		  ,SaleD.Quantity AS CantDISP_UN ,(SaleD.Quantity/SaleD.Equivalence) AS CantBU ,SaleD.Price AS PrecioProducto ,SaleD.Total AS TotalProducto
 		  ,CASE SaleD.DiscountTypeIdc WHEN 33 THEN Round(((SaleD.Total*SaleD.Discount*100)/10000),2) WHEN 34 THEN SaleD.Discount
 		   ELSE 0.00 END AS DescuentoProducto ,CASE Sale.DiscountTypeIdc WHEN 33 THEN (Sale.Discount/100) WHEN 34 THEN Round((Sale.Discount/Sale.Total),6)
 		   ELSE 0.00 END AS DescuentoDocumento ,Usr1.Name AS UsuarioTransaccion ,Prd.Weight AS PesoNeto ,Prd.TotalWeight AS PesoBruto
-		  ,(Prd.Weight*SaleD.Quantity/CUnit.Equivalence) AS TotalKilosNetos ,(Prd.TotalWeight*SaleD.Quantity/CUnit.Equivalence) AS TotalKilosBrutos
-		  ,(STd.PPP / CUnit.Equivalence) AS CostoPrecioPromedio ,(SaleD.Quantity*(STd.PPP/CUnit.Equivalence)) as TotalCostoPromedio
+		  ,(Prd.Weight*SaleD.Quantity/SaleD.Equivalence) AS TotalKilosNetos ,(Prd.TotalWeight*SaleD.Quantity/SaleD.Equivalence) AS TotalKilosBrutos
+		  ,(STd.PPP / SaleD.Equivalence) AS CostoPrecioPromedio ,(SaleD.Quantity*(STd.PPP/SaleD.Equivalence)) as TotalCostoPromedio
 		  ,Opc.Number AS NumeroGuia ,C11.Name AS EstadoGuia ,Seller.Name AS RepartidorNombre
 		  ,convert(date, Opc.CreationDate) as FechaCreacionGuia ,convert(date, Opc.DispatchDate) as FechaDespachoGuia
   		  ,Sale.Observation as Descripcion 
@@ -60,7 +60,7 @@ FROM Sales.MsSale Sale
 			INNER JOIN Base.PsClassifier C9 ON C9.Id = Customer.CustomerTypeIdc
 			INNER JOIN Base.PsClassifier C10 ON C10.Id = Customer.CategoryIdC
 			INNER JOIN Base.PsClassifierRecursive CRecursive ON CRecursive.Id = Customer.BussinessTypeIdr
-			INNER JOIN Warehouse.PsCompanyUnit CUnit ON CUnit.CompanyId = Cmp.Id and CUnit.ProductId = Prd.Id
+			-- INNER JOIN Warehouse.PsCompanyUnit CUnit ON CUnit.CompanyId = Cmp.Id and CUnit.ProductId = Prd.Id
 			INNER JOIN Warehouse.PsOpcOrderSale OpcSale ON OpcSale.SaleId = Sale.Id
 			INNER JOIN Warehouse.PsOpc Opc ON Opc.Id = OpcSale.OpcId AND Opc.CompanyId = Sale.CompanyId
 			INNER JOIN Base.PsClassifier C11 ON C11.Id = Opc.StatusIdc
@@ -82,13 +82,13 @@ FROM Sales.MsSale Sale
 					WHEN 0 THEN 'No'
 					WHEN 1 THEN 'Si'
 		   END AS Bonificacion
-		  ,Batch.BachNumber AS NumeroLote ,C3.Name AS UnidadMedidaVenta ,CUnit.Equivalence AS FactorConversion ,PLst.Name AS ListaPrecio
-		  ,SaleD.Quantity AS CantDISP_UN ,(SaleD.Quantity/CUnit.Equivalence) AS CantBU ,SaleD.Price AS PrecioProducto ,SaleD.Total AS TotalProducto
+		  ,Batch.BachNumber AS NumeroLote ,C3.Name AS UnidadMedidaVenta ,SaleD.Equivalence AS FactorConversion ,PLst.Name AS ListaPrecio
+		  ,SaleD.Quantity AS CantDISP_UN ,(SaleD.Quantity/SaleD.Equivalence) AS CantBU ,SaleD.Price AS PrecioProducto ,SaleD.Total AS TotalProducto
 		  ,CASE SaleD.DiscountTypeIdc WHEN 33 THEN Round(((SaleD.Total*SaleD.Discount*100)/10000),2) WHEN 34 THEN SaleD.Discount
 		   ELSE 0.00 END AS DescuentoProducto ,CASE Sale.DiscountTypeIdc WHEN 33 THEN (Sale.Discount/100) WHEN 34 THEN Round((Sale.Discount/Sale.Total),6)
 		   ELSE 0.00 END AS DescuentoDocumento ,Usr1.Name AS UsuarioTransaccion ,Prd.Weight AS PesoNeto ,Prd.TotalWeight AS PesoBruto
-		  ,(Prd.Weight*SaleD.Quantity/CUnit.Equivalence) AS TotalKilosNetos ,(Prd.TotalWeight*SaleD.Quantity/CUnit.Equivalence) AS TotalKilosBrutos
-		  ,(STd.PPP/CUnit.Equivalence) AS CostoPrecioPromedio ,(SaleD.Quantity*(STd.PPP/CUnit.Equivalence)) as TotalCostoPromedio
+		  ,(Prd.Weight*SaleD.Quantity/SaleD.Equivalence) AS TotalKilosNetos ,(Prd.TotalWeight*SaleD.Quantity/SaleD.Equivalence) AS TotalKilosBrutos
+		  ,(STd.PPP/SaleD.Equivalence) AS CostoPrecioPromedio ,(SaleD.Quantity*(STd.PPP/SaleD.Equivalence)) as TotalCostoPromedio
 		  ,0 AS NumeroGuia ,'No Definido' AS EstadoGuia ,Usr.Name AS RepartidorNombre 
   		  ,DATEFROMPARTS(1900, 1 ,1) as FechaCreacionGuia ,DATEFROMPARTS(1900, 1 ,1) as FechaDespachoGuia
   		  ,Sale.Observation as Descripcion 
@@ -115,7 +115,7 @@ FROM Sales.MsSale Sale
 			INNER JOIN Base.PsClassifier C9 ON C9.Id = Customer.CustomerTypeIdc
 			INNER JOIN Base.PsClassifier C10 ON C10.Id = Customer.CategoryIdC
 			INNER JOIN Base.PsClassifierRecursive CRecursive ON CRecursive.Id = Customer.BussinessTypeIdr
-			INNER JOIN Warehouse.PsCompanyUnit CUnit ON CUnit.CompanyId = Cmp.Id and CUnit.ProductId = Prd.Id
+			-- INNER JOIN Warehouse.PsCompanyUnit CUnit ON CUnit.CompanyId = Cmp.Id and CUnit.ProductId = Prd.Id
 			INNER JOIN Warehouse.PsStoreTransactionDetail STd ON STd.StoreTransactionId = Sale.StoreTransactionId and STd.ProductId = SaleD.ProductId
 																	and STd.BatchId = SaleD.BatchId
 	 WHERE Not Exists (SELECT * FROM Warehouse.PsOpcOrderSale OpcSale

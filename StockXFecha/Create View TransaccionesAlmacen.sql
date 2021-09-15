@@ -23,7 +23,7 @@ SELECT Cmp.Id AS DistribuidorId
       ,Product.Id AS ProductoId 
       ,Product.Code AS ProductoCodigo 
       ,Product.[Name] AS ProductoNombre 
-	  ,CUnit.Equivalence AS FactorConverion
+	  ,TDetail.Equivalence AS FactorConverion
 	  ,Batch.Id AS NumeroLoteId 
 	  ,Batch.BachNumber AS NumeroLote 
 	  ,C1.[Name] AS TipoLote 
@@ -59,7 +59,7 @@ SELECT Cmp.Id AS DistribuidorId
 	   INNER JOIN [Base].[PsClassifier] C4 ON C4.Id = PLine.SegmentIdc 
 	   INNER JOIN [Base].[PsClassifier] C5 ON C5.Id = PLine.SubcategoryIdc 
 
-	   INNER JOIN [Warehouse].[PsCompanyUnit] CUnit ON CUnit.CompanyId = Cmp.Id AND CUnit.ProductId = Product.Id 
+	--    INNER JOIN [Warehouse].[PsCompanyUnit] CUnit ON CUnit.CompanyId = Cmp.Id AND CUnit.ProductId = Product.Id 
        INNER JOIN [Warehouse].[PsTransactionType] TType ON TType.Id = THeader.TransactionTypeId 
  WHERE THeader.StatusIdc = 67 
 )
