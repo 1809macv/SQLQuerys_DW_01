@@ -13,9 +13,9 @@ SELECT Pur.CompanyId AS IdDistribuidor
 		,Com.Name AS Distribuidor 
 		,C8.Name AS Ciudad 
 		,Pro.Name AS Proveedor 
-		,convert(date, Pur.PurchaseDate) AS FechaCompra 
+		,CONVERT(DATE, Pur.PurchaseDate) AS FechaCompra 
 		,Pur.InvoiceNumber AS NumeroFactura 
-		,convert(date,Pur.InvoiceDate) AS FechaFactura 
+		,CONVERT(DATE,Pur.InvoiceDate) AS FechaFactura 
 		,Pur.AuthorizationNumber AS NumeroAutorizacion 
 		,Pur.ControlCode AS CodigoControl 
 		,C1.Name AS EstadoPago 

@@ -1,4 +1,4 @@
-/****** Object:  Table [PIVOT].[extMsCompany]    Script Date: 11/18/2019 4:02:44 PM ******/
+/****** Object:  Table [PIVOT].[extMsProduct]    Script Date: 11/18/2019 4:02:44 PM ******/
 SET ANSI_NULLS ON
 GO
 

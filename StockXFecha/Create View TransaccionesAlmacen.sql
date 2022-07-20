@@ -1,20 +1,13 @@
-/****** Object:  View [PIVOT].[TransaccionesAlmacen]    Script Date: 4/8/2021 11:15:29 AM ******/
-SET ANSI_NULLS ON
+/****** Object:  View [PIVOT].[TransaccionesAlmacen]    Script Date: 31/03/2022 9:24:33 ******/
+SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT,
+   QUOTED_IDENTIFIER, ANSI_NULLS ON
 GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
 
 
 ALTER VIEW [PIVOT].[TransaccionesAlmacen]
+WITH SCHEMABINDING
 AS
 
-WITH MovimientoAlmacen(DistribuidorId, Distribuidor, AlmacenId, Almacen, FechaTransaccion, ProductoId, ProductoCodigo, ProductoNombre, FactorConverion, 
-                       NumeroLoteId, NumeroLote, TipoLote, Negocio, Reclasificacion, Segmento, SubRubro, FechaExpiracion, PesoNeto, PesoBruto, 
-					   TransaccionId ,TipoTransaccion ,TransactionTypeId ,TipoMovimiento, Cantidad)
-AS
-(
 SELECT Cmp.Id AS DistribuidorId 
       ,Cmp.[Name] AS Distribuidor 
       ,Store.Id AS AlmacenId 
@@ -23,7 +16,11 @@ SELECT Cmp.Id AS DistribuidorId
       ,Product.Id AS ProductoId 
       ,Product.Code AS ProductoCodigo 
       ,Product.[Name] AS ProductoNombre 
-	  ,TDetail.Equivalence AS FactorConverion
+	  ,CASE WHEN TDetail.Equivalence = 0 then 
+				IsNull((SELECT TOP 1 Equivalence FROM [Warehouse].[PsCompanyUnit]
+						 WHERE CompanyId = THeader.CompanyId AND ProductId = TDetail.ProductId),1)
+			ELSE TDetail.Equivalence
+	   END AS FactorConverion
 	  ,Batch.Id AS NumeroLoteId 
 	  ,Batch.BachNumber AS NumeroLote 
 	  ,C1.[Name] AS TipoLote 
@@ -59,35 +56,9 @@ SELECT Cmp.Id AS DistribuidorId
 	   INNER JOIN [Base].[PsClassifier] C4 ON C4.Id = PLine.SegmentIdc 
 	   INNER JOIN [Base].[PsClassifier] C5 ON C5.Id = PLine.SubcategoryIdc 
 
-	--    INNER JOIN [Warehouse].[PsCompanyUnit] CUnit ON CUnit.CompanyId = Cmp.Id AND CUnit.ProductId = Product.Id 
-       INNER JOIN [Warehouse].[PsTransactionType] TType ON TType.Id = THeader.TransactionTypeId 
- WHERE THeader.StatusIdc = 67 
-)
-SELECT DistribuidorId
-      ,Distribuidor
-	  ,AlmacenId
-	  ,Almacen
-	  ,FechaTransaccion
-	  ,ProductoId
-	  ,ProductoCodigo
-	  ,ProductoNombre
-	  ,FactorConverion
-	  ,NumeroLoteId
-	  ,NumeroLote
-	  ,TipoLote
-	  ,Negocio
-	  ,Reclasificacion
-	  ,Segmento
-	  ,SubRubro
-	  ,FechaExpiracion
-	  ,PesoNeto
-	  ,PesoBruto
-	  ,TransaccionId
-	  ,TipoTransaccion
-	  ,TipoMovimiento
-	  ,Cantidad
-  FROM MovimientoAlmacen MA 
- WHERE DistribuidorId >= 3
+	   INNER JOIN [Warehouse].[PsTransactionType] TType ON TType.Id = THeader.TransactionTypeId 
+ WHERE THeader.CompanyId >= 3 AND THeader.StatusIdc = 67 
+
 
 GO
 

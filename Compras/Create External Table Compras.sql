@@ -14,7 +14,7 @@ CREATE EXTERNAL TABLE [PIVOT].[extCompras]
 	[FechaCompra] [date] NULL,
 	[NumeroFactura] [int] NOT NULL,
 	[FechaFactura] [date] NULL,
-	[NumeroAutorizacion] [varchar](50) NULL,
+	[NumeroAutorizacion] [varchar](70) NULL,
 	[CodigoControl] [varchar](50) NULL,
 	[EstadoPago] [varchar](255) NOT NULL,
 	[Referencia] [varchar](255) NOT NULL,
