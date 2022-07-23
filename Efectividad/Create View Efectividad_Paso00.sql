@@ -2,7 +2,7 @@
 SET LANGUAGE Spanish
 SET DATEFIRST 7;
 
-CREATE VIEW [PIVOT].[Efectividad_Paso00]
+CREATE OR ALTER VIEW [PIVOT].[Efectividad_Paso00]
 AS
 
 SELECT DISTINCT Company.Id AS IdDistribuidor
@@ -15,8 +15,8 @@ SELECT DISTINCT Company.Id AS IdDistribuidor
 	,Usr.[Name] AS VendedorNombre
   FROM [Sales].MsSale Sale
 		INNER JOIN Base.MsCompany Company ON Company.Id = Sale.CompanyId
-		INNER JOIN [Security].MsUser Usr ON Usr.Id = Sale.UserId 
+		INNER JOIN [Security].MsUser Usr ON Usr.Id = Sale.SellerId 
 		INNER JOIN Base.PsClassifier C3 ON C3.Id = Company.LocalIdc and C3.ClassifierTypeId = 50 
- WHERE Sale.CompanyId >= 3 
+ WHERE Sale.StatusIdc <> 104 AND Sale.CompanyId >= 3 
 
 GO

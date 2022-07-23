@@ -17,16 +17,19 @@ ELSE
 		INSERT INTO [PIVOT].[CoberturaXCliente_Diario]
 		SELECT CXC.IdDistribuidor, CXC.Distribuidor, CXC.Ciudad 
 			  , YEAR(FechaVenta)
-			  , MONTH(CXC.FechaVenta)
+			  , Mes.Id
 			  , CXC.FechaVenta, CXC.TipoNegocio, CXC.TipoCliente, CXC.CategoriaCliente
 			  , CXC.Zona
 			  , CXC.ClienteCodigo 
 			  , CXC.ClienteNombre 			  
 			  , COUNT(CXC.CustomerId) as Cobertura 
 		  FROM [PIVOT].[extCoberturaXCliente_Diario] CXC 
-		 WHERE FechaVenta > @FechaDesde AND FechaVenta < @FechaHoy
+			   INNER JOIN [PIVOT].[Meses] Mes ON Mes.Id = MONTH(CXC.FechaVenta)
+		 WHERE CXC.FechaVenta > @FechaDesde AND CXC.FechaVenta < @FechaHoy
 		GROUP BY CXC.IdDistribuidor, CXC.Distribuidor, CXC.Ciudad, Mes.Id, CXC.FechaVenta, CXC.TipoNegocio, CXC.TipoCliente, CXC.CategoriaCliente
-			   , CXC.Zona, CXC.ClienteCodigo, CXC.ClienteNombre 
+			   ,CXC.Zona
+			   ,CxC.ClienteCodigo
+			   ,CxC.ClienteNombre 
 		IF @@ERROR <> 0 
 			ROLLBACK;
 		ELSE

@@ -8,10 +8,11 @@ GO
 CREATE EXTERNAL TABLE [PIVOT].[extEfectividad_Paso02]
 (
 	[DistribuidorId] [bigint] NOT NULL,
+	[VendedorId] [bigint] NOT NULL,
 	[VendedorNombre] [varchar](200) NOT NULL,
-	[ClienteNombre] varchar(100) NOT NULL,
-	[VendedorId] bigint NOT NULL,
-	[FechaVenta] date NULL
+	[ClienteId] [bigint] NOT NULL,
+	[ClienteNombre] [varchar](100) NOT NULL,
+	[FechaVenta] [date] NULL
 )
 WITH (DATA_SOURCE = [srcArcor],
 SCHEMA_NAME = N'PIVOT',OBJECT_NAME = N'Efectividad_Paso02')
