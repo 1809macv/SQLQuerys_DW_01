@@ -5,17 +5,21 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE EXTERNAL TABLE [PIVOT].[extEfectividad_Paso02]
+CREATE EXTERNAL TABLE [PIVOT].[extEfectividad_Paso03]
 (
 	[DistribuidorId] [bigint] NOT NULL,
+	[Distribuidor] [nvarchar](255) NOT NULL,
+	[VendedorId] [bigint] NOT NULL,
 	[VendedorNombre] [varchar](200) NOT NULL,
-	[ClienteNombre] varchar(100) NOT NULL,
-	[VendedorId] bigint NOT NULL,
-	[FechaVenta] date NULL
+	[ClienteId] [bigint] NOT NULL,
+	[ClienteNombre] [varchar](150) NOT NULL,
+	[Fecha] [date] NULL,
+	[Tipo] [varchar](6) NOT NULL
+
 )
 WITH (DATA_SOURCE = [srcArcor],
-SCHEMA_NAME = N'PIVOT',OBJECT_NAME = N'Efectividad_Paso02')
+SCHEMA_NAME = N'PIVOT',OBJECT_NAME = N'Efectividad_Paso03')
 GO
 
 
-select top 10 * from [PIVOT].extEfectividad_Paso02
+select top 10 * from [PIVOT].extEfectividad_Paso03

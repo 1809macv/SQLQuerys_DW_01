@@ -9,7 +9,7 @@ DECLARE @FechaProceso as Date
 SET @FechaDia = DATEFROMPARTS(YEAR(@FechaDia), MONTH(@FechaDia), 1)
 SET @FechaProceso = @FechaDia
 
-DELETE FROM [PIVOT].[Efectividad2]
+DELETE FROM [PIVOT].[Efectividad]
 WHERE Fecha >= @FechaDia;
 IF @@ERROR <> 0
 	ROLLBACK;
@@ -42,7 +42,7 @@ ELSE
 
 
 		-- Inserta los vendedores que realizaron ventas por fecha y por Distribuidor
-		INSERT INTO [PIVOT].Efectividad2
+		INSERT INTO [PIVOT].Efectividad
 				(IdDistribuidor, Distribuidor, Sucursal, Gestion, Mes, Fecha, SemanaMes, SemanaAnio
 				, VendedorId, VendedorNombre)
 		SELECT IdDistribuidor, Distribuidor, Sucursal, Year(FechaVenta), Month(FechaVenta)
@@ -55,42 +55,42 @@ ELSE
 
 
 		-- Actualiza el campo PDVProgramado con los clientes programados segun zona para cada dia por vendedor
-		UPDATE [PIVOT].[Efectividad2]
+		UPDATE [PIVOT].[Efectividad]
 		   SET PDVProgramado = ( Select Count(*)
 						  FROM [PIVOT].[extCustomerRouteList] CustomerRoute 
-							 WHERE CustomerRoute.CompanyId = Efectividad2.IdDistribuidor
-									AND DatePart(DW, Efectividad2.Fecha) = CustomerRoute.[NumeroDia]
-									AND ( CustomerRoute.InitialDate <= Efectividad2.Fecha 
-									AND Convert( date, isnull(CustomerRoute.FinalDate, GetDate())) >= Efectividad2.Fecha )
-									AND ( Convert(DATE, CustomerRoute.InitialDate_Route) <= Efectividad2.Fecha 
-									AND Convert(DATE, IsNull(CustomerRoute.FinalDate_Route, GetDate())) >= Efectividad2.Fecha )
-									AND CustomerRoute.VendedorId = Efectividad2.VendedorId)
+							 WHERE CustomerRoute.CompanyId = Efectividad.IdDistribuidor
+									AND DatePart(DW, Efectividad.Fecha) = CustomerRoute.[NumeroDia]
+									AND ( CustomerRoute.InitialDate <= Efectividad.Fecha 
+									AND Convert( date, isnull(CustomerRoute.FinalDate, GetDate())) >= Efectividad.Fecha )
+									AND ( Convert(DATE, CustomerRoute.InitialDate_Route) <= Efectividad.Fecha 
+									AND Convert(DATE, IsNull(CustomerRoute.FinalDate_Route, GetDate())) >= Efectividad.Fecha )
+									AND CustomerRoute.VendedorId = Efectividad.VendedorId)
 		WHERE Fecha >= @FechaDia
 
 
 		-- Actualiza el campo PDVCompraron se realiza un DSITINCT para aquellas compras realizadas mas de una vez para un mismo
 		-- Cliente en el mismo dia.
-		UPDATE [PIVOT].Efectividad2
-		   SET Efectividad2.PDVCompraron = (SELECT count(*) FROM [PIVOT].extEfectividad_Paso02 Efec
-											WHERE Efec.DistribuidorId = Efectividad2.IdDistribuidor AND
-												  Efec.VendedorId = Efectividad2.VendedorId AND
-												  Efec.FechaVenta = Efectividad2.Fecha )
+		UPDATE [PIVOT].Efectividad
+		   SET Efectividad.PDVCompraron = (SELECT count(*) FROM [PIVOT].extEfectividad_Paso02 Efec
+											WHERE Efec.DistribuidorId = Efectividad.IdDistribuidor AND
+												  Efec.VendedorId = Efectividad.VendedorId AND
+												  Efec.FechaVenta = Efectividad.Fecha )
 		 WHERE Fecha >= @FechaProceso;
 
 
 		-- Actualiza el campo PDVVisitados se realiza un DSITINCT para aquellas visitas y compras realizadas mas de una vez para un mismo
 		-- Cliente en el mismo dia.
-		WITH Promedio2(DistribuidorId, Distribuidor, VendedorNombre, ClienteNombre, VendedorId, Fecha)
+		WITH Promedio2(DistribuidorId, Distribuidor, VendedorNombre, ClienteId, ClienteNombre, VendedorId, Fecha)
 		AS
 		(
-		SELECT Distinct DistribuidorId, Distribuidor, VendedorNombre, ClienteNombre, VendedorId, Fecha
+		SELECT Distinct DistribuidorId, Distribuidor, VendedorNombre, ClienteId, ClienteNombre, VendedorId, Fecha
 		  FROM [PIVOT].extEfectividad_Paso03 
 		)
-		UPDATE [PIVOT].Efectividad2
+		UPDATE [PIVOT].Efectividad
 		   SET PDVVisitados = ( SELECT count(*) FROM Promedio2
-								 WHERE Promedio2.DistribuidorId = Efectividad2.IdDistribuidor and
-									   Promedio2.VendedorId = Efectividad2.VendedorId and
-									   Promedio2.Fecha = Efectividad2.Fecha )
+								 WHERE Promedio2.DistribuidorId = Efectividad.IdDistribuidor and
+									   Promedio2.VendedorId = Efectividad.VendedorId and
+									   Promedio2.Fecha = Efectividad.Fecha )
 		 WHERE Fecha >= @FechaProceso;
 
 
@@ -108,7 +108,7 @@ ELSE
 	WHILE @IdDistribuidor <= @Max_Distribuidor
 	BEGIN
 		SET @FechaDia = @FechaProceso
-		SET @FechaMin = (SELECT MIN(Fecha) From [PIVOT].[Efectividad2]
+		SET @FechaMin = (SELECT MIN(Fecha) From [PIVOT].[Efectividad]
 						  WHERE IdDistribuidor = @IdDistribuidor)
 		--PRINT @FechaMin
 		IF @FechaMin IS NOT NULL
@@ -121,7 +121,7 @@ ELSE
 			BEGIN
 				IF EOMONTH(@FechaMin,-1) < @FechaDia AND @FechaDia <= EOMONTH(@FechaMin)
 					BEGIN
-						UPDATE [PIVOT].[Efectividad2]
+						UPDATE [PIVOT].[Efectividad]
 							SET PDVPromedio = PDVVisitados
 							WHERE IdDistribuidor = @IdDistribuidor and Fecha = @FechaDia; 
 					END
@@ -140,12 +140,12 @@ ELSE
 								,VendedorId
 								,Fecha
 								,sum(PDVVisitados)
-							FROM [PIVOT].[Efectividad2] 
+							FROM [PIVOT].[Efectividad] 
 						GROUP BY IdDistribuidor ,VendedorId ,Fecha
 						)
-						UPDATE [PIVOT].[Efectividad2] 
-							SET Efectividad2.PDVPromedio = ROUND(( Pro.TotalVisitados / @NumeroMeses ), 0)
-							FROM [PIVOT].[Efectividad2] Efec 
+						UPDATE [PIVOT].[Efectividad] 
+							SET Efectividad.PDVPromedio = ROUND(( Pro.TotalVisitados / @NumeroMeses ), 0)
+							FROM [PIVOT].[Efectividad] Efec 
 								INNER JOIN Promedio Pro ON Pro.IdDistribuidor = Efec.IdDistribuidor and Pro.VendedorId = Efec.VendedorId and Pro.Fecha = Efec.Fecha
 							WHERE Efec.IdDistribuidor = @IdDistribuidor and Efec.Fecha = @FechaDia 
 					END
